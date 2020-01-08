@@ -156,7 +156,10 @@ function showPieChartContp(fdata, cont)
     container.innerHTML = "";
     var textnode = document.createTextNode("Conflict Type");         // Create a text node
     container.append(textnode); 
+
+    
     pieChart('#'+cont, agreementsCountType);
+    
  
 
 }

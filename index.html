@@ -265,14 +265,21 @@ function loadGraphs(){
     //Ordenar el resultado por orden descendiente (primero se ven los países con más acuerdos)
     agreementsCountByCon.sort((a, b) => b.values - a.values);
 
-    //Mostrar gráfico de barras
-    showHorizontalBars(agreementsCountByCon);
+    if (agreementsCountByCon.length === 0){ //mostrar mensaje de que no hay datos
+        document.getElementById("piechart2").innerHTML = "NO DATA";
+        document.getElementById("piechart1").innerHTML = "NO DATA";
+        document.getElementById("dataviz").innerHTML = "NO DATA";
+        alert ("No data with the current filters");
+    }else{
+        //Mostrar gráfico de barras
+        showHorizontalBars(agreementsCountByCon);
 
-    //Mostrar gráfico circular de la distribución según la Etapa (Stage)
-    showPieChartStage(filteredData,"piechart2");
-   
-   //Mostrar gráfico circular de la distribución según la tipo de conflicto (Contp)
-    showPieChartContp(filteredData,"piechart1");
+        //Mostrar gráfico circular de la distribución según la Etapa (Stage)
+        showPieChartStage(filteredData,"piechart2");
+       
+       //Mostrar gráfico circular de la distribución según la tipo de conflicto (Contp)
+        showPieChartContp(filteredData,"piechart1");
+   } 
 }
 
 

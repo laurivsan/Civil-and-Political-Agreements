@@ -264,15 +264,22 @@ function loadGraphs(){
 
     //Ordenar por año
     agreementsCountByYear.sort((a, b) => d3.ascending(a.key, b.key));
+    if (agreementsCountByYear.length === 0){ //mostrar mensaje de que no hay datos
+        document.getElementById("piechart2").innerHTML = "NO DATA";
+        document.getElementById("piechart1").innerHTML = "NO DATA";
+        document.getElementById("dataviz").innerHTML = "NO DATA";
+        alert ("No data with the current filters");
+    }else{
+        //Mostrar gráfico circular de la distribución según la Etapa (Stage)
+        showPieChartStage(filteredData,"piechart2");
+       
+       //Mostrar gráfico circular de la distribución según la tipo de conflicto (Contp)
+        showPieChartContp(filteredData,"piechart1");
 
-    //Mostrar gráfico circular de la distribución según la Etapa (Stage)
-    showPieChartStage(filteredData,"piechart2");
-   
-   //Mostrar gráfico circular de la distribución según la tipo de conflicto (Contp)
-    showPieChartContp(filteredData,"piechart1");
-
-    //Mostrar gráfico de linea:
-      showLineChart(agreementsCountByYear, "dataviz");
+        //Mostrar gráfico de linea:
+          showLineChart(agreementsCountByYear, "dataviz");
+      }
+  
 }
 
 
