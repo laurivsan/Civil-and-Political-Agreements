@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        width: 1200px;
+        height: 3000px;
+        position: relative;
+    }
+
+    svg {
+        width: 100%;
+        height: 100%;
+        position: center;
+    }
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  height: auto;
+    flex: 1;
+  padding: 15px;
+}
+
+.container {
+    display:flex;
+    flex-direction: row;
+}
+  .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+        display: none;
+    }
+
+    .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+
+    .overlay {
+        fill: none;
+        pointer-events: all;
+    }
+
+    .focus circle {
+        fill: steelblue;
+    }
+
+    .focus text {
+        font-size: 14px;
+    }
+
+    .tooltip {
+        fill: white;
+        stroke: #000;
+    }
+
+    .tooltip-date, .tooltip-likes {
+        font-weight: bold;
+    }
+
+</style>
+<body>
+<title>Civil and politic agreements</title>
+<p>Civil and politic agreements by Year</p>
+
+<div >
+<label>Country
+<select  id = "selCountry" 
+    onchange = "changeCountry()">
+    </select>
+</label>
+
+
+</div>
+
+<div class="column3">
+<label>Mention
+<select id = "selType" onchange = "changeType()">
+<option value="All" >All</option>
+<option value="HrCp">Civil and political rights</option>
+<option value="CprLife">Life</option>
+<option value="CprTort" >Torture</option>
+<option value="CprEq">Equality</option>
+<option value="CprSlav">Slavery</option>
+<option value="CprLib">Liberty and security of person</option>
+<option value="CprDet">Humane treatment in detention</option>
+<option value="CprFmov">Freedom of movement</option>
+<option value="CprFspe">Freedom of speech</option>
+<option value="CprFass">Freedom of association</option>
+<option value="CprTria">Fair trial</option>
+<option value="CprPriv">Privacy and family life</option>
+<option value="CprVote">Vote and take part</option>
+<option value="CprReli">Thought, opinion, conscience and religion</option>
+<option value="CprOth">Other</option>
+    </select>
+</label>
+
+</div>
+<div id="divTotal" >
+<p id="divTotal"></p>
+</div>
+<button onclick="downloadCurrentData()">Descargar datos</button>
+
+<div class="container">
+
+
+<div class="column" id="piechart1" >
+
+</div>
+<div class="column" id="piechart2" >
+
+</div>
+</div>
+<div class="container">
+<div  id="dataviz" >
+
+</div>
+</div>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="visualization.js"></script>
+<script>
+
+var globalData; //data es una variable global
+var globalSelectedCountry = "All";
+var globalSelectedType = "All";
+var filteredData;
+
+//Función para descargar
+function downloadCurrentData()
+{
+console.log("download");
+console.log(filteredData);
+    donwloadJSON(filteredData, 'AgreementsBy'+globalSelectedCountry+globalSelectedType);
+}
+
+window.onload = function() {
+    
+        //Cargar los datos del CSV:
+    d3.csv("data/pax_all_agreements_data.csv", function(data) {
+
+    //Todos los datos:
+    console.log(data[0]);
+    globalData=data;
+
+   dateToYear();
+
+
+  //Cargar los desplegables:
+    loadCountries("selCountry");
+
+    getParameters();
+
+
+    //Mostrar todos los países sin filtrar o con los de los parametros en la URL:
+    loadGraphs();
+
+
+
+})
+
+};
+
+function getParameters()
+{
+    paramCountry = getUrlVars()["country"];
+    paramType = getUrlVars()["type"];
+    if (paramCountry != undefined)
+    {
+        globalSelectedCountry = paramCountry
+    }
+    if (paramType != undefined)
+    {
+        globalSelectedType = paramType
+    }
+    selectOption(globalSelectedCountry, "selCountry");
+    selectOption(globalSelectedType, "selType");
+
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+
+
+
+
+//Función que se ejecuta al seleccionar un país del desplegable:
+function changeCountry(){
+    var selCountry = document.getElementById("selCountry");
+  
+    var country = selCountry.value;
+    console.log(country);
+    globalSelectedCountry=country;
+    loadGraphs();
+}
+
+//Función que se ejecuta al seleccionar un tipo de acuerdo del desplegable:
+function changeType(){
+var selType = document.getElementById("selType");
+  var type = selType.value;
+    console.log(type);
+    globalSelectedType=type;
+    loadGraphs();
+
+}
+
+
+function loadGraphs(){
+    
+    if (globalSelectedCountry != "All"){
+        filteredData = globalData.filter(function(d){return d.Con == globalSelectedCountry});
+    }else
+    {
+        filteredData = globalData;
+    }
+
+    if (globalSelectedType != "All"){
+        filteredData = filteredData.filter(function(d){return d[globalSelectedType] == 1});
+    }
+
+
+    var divTotal = document.getElementById("divTotal");
+    //console.log(divTotal)
+    divTotal.innerHTML="Agreements shown:" +filteredData.length;
+    var agreementsCountByYear = getAgreementsCountByYear(filteredData);
+
+
+    //Añadir ceros en los años que no aparecen en el json array:
+    var maxYear = d3.max(agreementsCountByYear, function(d) { return d.key; });
+    var minYear = d3.min(agreementsCountByYear, function(d) { return d.key; });
+
+   
+    for (i = minYear; i < maxYear; i++) {
+        var has= false;
+        agreementsCountByYear.forEach(function(d) {   
+            if (d.key === i+"") 
+            {
+                has = true;
+            }                          
+                                  
+        });
+        if (!has)
+        {
+            agreementsCountByYear.push({"key":i+"","values":0});
+        }
+    }
+
+    //TODO: Mejorar rellenado de huecos
+
+
+    //Ordenar por año
+    agreementsCountByYear.sort((a, b) => d3.ascending(a.key, b.key));
+
+    //Mostrar gráfico circular de la distribución según la Etapa (Stage)
+    showPieChartStage(filteredData,"piechart2");
+   
+   //Mostrar gráfico circular de la distribución según la tipo de conflicto (Contp)
+    showPieChartContp(filteredData,"piechart1");
+
+    //Mostrar gráfico de linea:
+      showLineChart(agreementsCountByYear, "dataviz");
+}
+
+
+
+
+
+</script>
+</body>
