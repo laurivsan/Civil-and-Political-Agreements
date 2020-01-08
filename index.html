@@ -160,14 +160,14 @@ var globalData; //data es una variable global
 var globalSelectedRegion = "All";
 var globalSelectedYear = "All";
 var globalSelectedType = "All";
+var filteredData;
 
 
 //Función para descargar
 function downloadCurrentData()
 {
 console.log("download");
-console.log(filteredData);
-    donwloadJSON(filteredData, 'AgreementsBy'+globalSelectedRegion+globalSelectedYear+globalSelectedType);
+    downloadJSON(filteredData, 'AgreementsBy'+globalSelectedRegion+globalSelectedYear+globalSelectedType);
 }
 
 window.onload = function() {
@@ -235,7 +235,7 @@ function changeRegion(){
   } 
 
 function loadGraphs(){
-   var filteredData;
+
     
     if (globalSelectedRegion != "All"){
         filteredData = globalData.filter(function(d){return d.Reg == globalSelectedRegion});

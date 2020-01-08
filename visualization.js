@@ -1,6 +1,6 @@
 
 
-function donwloadJSON( items, fileName) {
+function downloadJSON( items, fileName) {
  
 
 const jsonObject = JSON.stringify(items);
