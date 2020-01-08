@@ -382,7 +382,7 @@ var valueline = d3.svg.line()
     .y(function(d) { return y(d.values); });
     
 // Adds the svg canvas
-var svg = d3.select("body")
+var svg = d3.select("#dataviz")
     .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)

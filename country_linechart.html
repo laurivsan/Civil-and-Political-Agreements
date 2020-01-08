@@ -120,11 +120,11 @@
 
 </div>
 </div>
-<div class="container">
+
 <div  id="dataviz" >
 
 </div>
-</div>
+
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="visualization.js"></script>
 <script>
@@ -132,7 +132,7 @@
 var globalData; //data es una variable global
 var globalSelectedCountry = "All";
 var globalSelectedType = "All";
-var filteredData;
+
 
 //Función para descargar
 function downloadCurrentData()
@@ -220,7 +220,7 @@ var selType = document.getElementById("selType");
 
 
 function loadGraphs(){
-    
+    var filteredData;
     if (globalSelectedCountry != "All"){
         filteredData = globalData.filter(function(d){return d.Con == globalSelectedCountry});
     }else
